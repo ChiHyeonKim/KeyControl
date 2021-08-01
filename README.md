@@ -12,6 +12,7 @@
     - Gradle
     - Junit
 
+
 API 명세
 ---
 ### KEY 정보를 등록하는 API
@@ -31,7 +32,7 @@ API 명세
 | generator      | string  |     | DB의 종류 선택                                           |
 | min_length      | int  |     | 숫자형 KEY인 경우 자리수                                          |
 
-요청 예)
+요청 예시
 
 ```json
 {
@@ -50,6 +51,7 @@ API 명세
 200 OK
 ```
 
+
 ### 각 KEY 별로 새로운 KEY를 하나 발급 받는 API
 
 #### 요청
@@ -58,12 +60,18 @@ API 명세
 | ---- | -------------- |
 | URI  | `GET` /api/key/요청 KEY |
 
+요청 예시
+```
+GET /api/key/claim-number
+```
+
 #### 응답
 
 응답 예시
 ```
 "value": "UCAA-E22A-OOKP-0021"
 ```
+
 
 ## 기능 요구사항
 ### 필수사항
