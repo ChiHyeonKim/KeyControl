@@ -106,9 +106,6 @@ double 타입을 long 타입으로 변환하려 방법을 찾아봤지만 변환
     
 ### 문자형, 숫자형 KEY 발급 기능 구현
 - 발급 KEY의 종류가 문자형 인 경우 GenerateStringKey 클래스를 이용하여 발급 가능하게 구현
-- 
-### 문자형, 숫자형 KEY 발급 기능 구현
-- 발급 KEY의 종류가 문자형 인 경우 GenerateStringKey 클래스를 이용하여 발급 가능하게 구현
 - 발급 KEY의 종류가 숫자형 인 경우 GenerateIntKey    클래스를 이용하여 발급 가능하게 구현
 
 ###  KEY 는 DB TABLE 의 PK 로 이용 할 수 있는 NOT NULL, UNIQUE 특징 기능 구현
