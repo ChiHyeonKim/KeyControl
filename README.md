@@ -98,10 +98,10 @@ double 타입을 long 타입으로 변환하려 방법을 찾아봤지만 변환
 ## 핵심 문제 해결 전략
 ### KEY 정보를 등록하는 데이터의 자료 구조
 - HashMap 형태로 구현 되어 데이터는 HashMap<String, Object> = <각 서비스 별 KEY 값, 각 서비스별 KEY 정보 > 형태로 저장되어 있다
-- EX) <policy-number, (policy-number, 보험 증서 번호에 사용할 KEY 값으로 테이블 PK 로 사용,number, HashSet(key, key), ...  ) > 
+- EX) <policy-number, (policy-number, 보험 증서 번호에 사용할 KEY 값으로 테이블 PK 로 사용,number, Stack(key, key), ...  ) > 
 
 ### KEY를 발급하는 데이터의 자료 구조
-- HashSet 형태로 구현 되어 문자형 KEY는 HashSet<String>, 숫자형 KEY는 HashSet<Integer> 형태로 중복 없이 저장되어 있다
+- Stack 형태로 구현 되어 문자형 KEY는 Stack<String>, 숫자형 KEY는 Stack<Integer> 형태로 중복 없이 저장되어 있다
 - EX) {'AA12-BB33-CCCC-00DD', 'AA12-BB33-CCCC-22DD'}, {'12345', '15662', '25664', '35677'}
     
 ### 문자형, 숫자형 KEY 발급 기능 구현
@@ -120,5 +120,8 @@ MVP 패턴, Controller -> Service -> Repository 로 로직 나누기 등 Spring 
 
 또한 RESPful API 의 개념과 구현에 대해서도 확실하게 공부할 수 있었다.
 
+그리고 자료를 저장할 때 어떤 자료구조를 선택하여 데이터의 추가, 삭제,저장, 조회를 할지도 상당히 중요하다는 걸 깨달았다.
+처음 Key들의 목록을 저장할때 자료구조를 HashSet으로 선택하려지만 방금 추가한 Key를 가져올 수 없어서 Stack으로 바꿨다.
+    
 새로운 것을 배운다는 것은 힘들지만 재미있다.
 언어에 대한 인식을 바꾸게 해준 너무 좋은 경험.
