@@ -94,7 +94,19 @@ RANDOM 숫자형 KEY 생성 시 Math.random() 을 이용하여 생성하게 되�
 Math.random() 함수에서 추출하는 값의 타입은 double 타입 이다.
 double 타입을 long 타입으로 변환하려 방법을 찾아봤지만 변환에 실패하였다.)
 
+
 ## 핵심 문제 해결 전략
+### KEY 정보를 등록하는 데이터의 자료 구조
+- HashMap 형태로 구현 되어 데이터는 HashMap<String, Object> = <각 서비스 별 KEY 값, 각 서비스별 KEY 정보 > 형태로 저장되어 있다
+- EX) <policy-number, (policy-number, 보험 증서 번호에 사용할 KEY 값으로 테이블 PK 로 사용,number, HashSet(key, key), ...  ) > 
+
+### KEY를 발급하는 데이터의 자료 구조
+- HashSet 형태로 구현 되어 문자형 KEY는 HashSet<String>, 숫자형 KEY는 HashSet<Integer> 형태로 중복 없이 저장되어 있다
+- EX) {'AA12-BB33-CCCC-00DD', 'AA12-BB33-CCCC-22DD'}, {'12345', '15662', '25664', '35677'}
+    
+### 문자형, 숫자형 KEY 발급 기능 구현
+- 발급 KEY의 종류가 문자형 인 경우 GenerateStringKey 클래스를 이용하여 발급 가능하게 구현
+- 
 ### 문자형, 숫자형 KEY 발급 기능 구현
 - 발급 KEY의 종류가 문자형 인 경우 GenerateStringKey 클래스를 이용하여 발급 가능하게 구현
 - 발급 KEY의 종류가 숫자형 인 경우 GenerateIntKey    클래스를 이용하여 발급 가능하게 구현
@@ -102,6 +114,7 @@ double 타입을 long 타입으로 변환하려 방법을 찾아봤지만 변환
 ###  KEY 는 DB TABLE 의 PK 로 이용 할 수 있는 NOT NULL, UNIQUE 특징 기능 구현
 - KEY를 새롭게 생성할 떄 기존에 저장된 KEY와 중복이 있는지 검사하기 위해 isOverlap 메서드를 이용해 구현
 - 중복된 KEY가 없을 때 까지 무한 반복
+
 
 ### 총평
 이번 과제 해결을 위해 Spring Framework, Spring Boot, REST API에 대해 깊이있게 공부할 수 있었다. 회사에서는 Spring 이 아닌 다른 상용 Framework 를 사용하고 있어서 Spring Framework를 사용할 일이 잘 없었는데 이번 과제 해결을 위해서 처음으로 사용하여 보았다.
