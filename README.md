@@ -12,6 +12,59 @@
     - Gradle
     - Junit
 
+API 명세
+---
+### KEY 정보를 등록하는 API
+
+#### 요청
+
+| 항목 | 값             |
+| ---- | -------------- |
+| URI  | `POST` /api/key/register |
+
+`항목`
+
+| 이름       |  타입  | 필수 | 설명                                                         |
+| ---------- | :----: | :---: | ------------------------------------------------------------ |
+| key     | string |  ○   | 등록할 KEY 명                                          |
+| type      | string  |  ○   | KEY의 종류 (문자형,숫자형)                                           |
+| generator      | string  |     | DB의 종류 선택                                           |
+| min_length      | int  |     | 숫자형 KEY인 경우 자리수                                          |
+
+요청 예)
+
+```json
+{
+  "key": "policy-number",
+  "description": "보험 증서 번호에 사용할 KEY 값으로 테이블 PK 로 사용",
+  "type": "number",
+  "generator": "mysql",
+  "min_length": 10
+}
+```
+
+#### 응답
+
+응답 예시
+```
+200 OK
+```
+
+### 각 KEY 별로 새로운 KEY를 하나 발급 받는 API
+
+#### 요청
+
+| 항목 | 값             |
+| ---- | -------------- |
+| URI  | `GET` /api/key/요청 KEY |
+
+#### 응답
+
+응답 예시
+```
+"value": "UCAA-E22A-OOKP-0021"
+```
+
 ## 기능 요구사항
 ### 필수사항
 1. KEY 정보를 등록하는 API 구현
