@@ -4,9 +4,13 @@ import com.kakaoins.keycontrol.constans.ErrCode;
 import com.kakaoins.keycontrol.domain.Key;
 import com.kakaoins.keycontrol.exception.APIException;
 import com.kakaoins.keycontrol.repository.KeyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class KeyService {
-    private final KeyRepository keyRepository = new KeyRepository();
+    @Autowired
+    KeyRepository keyRepository;
 
     /**
      * KEY 정보를 등록하는 API
@@ -37,99 +41,83 @@ public class KeyService {
 
     /**
      * 각 KEY 별로 새로운 KEY를 하나 발급 받는 API
-     * 새로운 KEY 생성 -> 객체에 저장 -> DB에 저장 -> DB의 VALUE 값 보여주기
+     * 새로운 KEY 생성 -> Stack 저장 -> Stack의 제일 위 값 보여주기
      */
-    public String GenerateKey(String str) {
-        //새로운 KEY 생성
-
-        //객체에 KEY 저장
-        //HASH MAP의 KEY가 STR 인게 있는가
+    public void GenerateKey(String str) {
+        //HashMap에 KEY가 str 인게 있을 때만 HashSet에 새로운 key 생성
         if (true == keyRepository.isKey(str)) {
 
-            //KEY값이 없으면 생성
-            if (null == (keyRepository.get(str)).getValue()
-                || "" == (keyRepository.get(str)).getValue()) {
+
+            //HashSet에 key 값이 없으면 생성
+            //if (null == (keyRepository.get(str)).getValue()
+            //    || "" == (keyRepository.get(str)).getValue()) {
 
 
-                //STRING KEY로 만들지 NUMBER KEY로 만들지 결정
+            //STRING KEY로 만들지 NUMBER KEY로 만들지 결정
 
-                //STRING KEY 생성
+            //TYPE이 STRING인 경우에 STRING KEY 생성
+            if( "string".equals(keyRepository.get(str).getType())){
                 GenerateStringKey strkey = new GenerateStringKey();
+                String Stringnewvalue = strkey.GenerateStringKey();
 
-                if( "string".equals(keyRepository.get(str).getType())){
-                    String Stringnewvalue = strkey.GenerateStringKey();
-
-                    //새로 만든 KEY와 기존에 저장된 KEY가 중복이 안될떄까지 계속 검사 후 생성
-                    while(isOverlap(Stringnewvalue)){
-                        Stringnewvalue = strkey.GenerateStringKey();
-                        isOverlap(Stringnewvalue);
-                    }
-
-                    //객체의 value에 newvalue를 세팅
-                    (keyRepository.get(str)).setValue(Stringnewvalue);
+                //새로 만든 KEY와 기존에 저장된 KEY가 중복이 안될떄까지 계속 검사 후 생성
+                while(keyRepository.isOverlap(str, Stringnewvalue)){
+                    Stringnewvalue = strkey.GenerateStringKey();
+                    keyRepository.isOverlap(str, Stringnewvalue);
                 }
 
-                //NUMBER KEY 생성
-                else{
-                    GenerateIntKey intkey = new GenerateIntKey();
-                    int intnewvalue = 0;
-
-                    //min length
-                    int minlength = (keyRepository.get(str)).getMin_length();
-
-                    intnewvalue = intkey.GenerateIntKey(minlength);
-
-                    //새로 만든 KEY와 기존에 저장된 KEY가 중복이 안될떄까지 계속 검사 후 생성
-
-                    while(isOverlap(intnewvalue)){
-                        intnewvalue = intkey.GenerateIntKey(minlength);
-                        isOverlap(intnewvalue);
-                    }
-
-                    //객체의 value에 newvalue를 세팅
-                    (keyRepository.get(str)).setValue(Long.toString(intnewvalue));
-                    }
+                //객체의 value에 newvalue를 세팅
+                //(keyRepository.get(str)).setValue(Stringnewvalue);
+                (keyRepository.get(str)).setValue(Stringnewvalue);
             }
+
+            //NUMBER KEY 생성
+            else{
+                GenerateIntKey intkey = new GenerateIntKey();
+                int intnewvalue = 0;
+
+                //min length
+                int minlength = (keyRepository.get(str)).getMin_length();
+
+                intnewvalue = intkey.GenerateIntKey(minlength);
+
+                //새로 만든 KEY와 기존에 저장된 KEY가 중복이 안될떄까지 계속 검사 후 생성
+
+                while (keyRepository.isOverlap(str, Integer.toString(intnewvalue))) {
+                    intnewvalue = intkey.GenerateIntKey(minlength);
+                    keyRepository.isOverlap(str, Integer.toString(intnewvalue));
+                }
+
+                //객체의 Stacck에 new key를 세팅
+                //(keyRepository.get(str)).setValue(Long.toString(intnewvalue));
+                (keyRepository.get(str)).setValue(Integer.toString(intnewvalue));
+            }
+            //}
         }
         //HASH MAP에 해당 KEY가 등록되지 않았을 경우
         //500 에러를 메시지로 표현
         else {
             throw new APIException("해당 KEY가 존재하지 않습니다.", ErrCode.E0000.getCode());
         }
-
-        return (keyRepository.get(str)).getValue();
     }
 
     /**
-     * 새로 만든 KEY와 기존에 저장된 KEY가 중복이 있는지 검사하는 함수
+     * 새롭게 생성된 Stack 내부의 KEY를 RETURN 하는 함수
      */
-    public boolean isOverlap(String str) {
-        boolean flag = false;
-
-        for(String key : keyRepository.store.keySet()){
-            if((null != (keyRepository.get(key)).getValue() || "" != (keyRepository.get(key)).getValue()) ) {
-                if (str == keyRepository.get(key).getValue()) {
-                    flag = true;
-                    break;
-                }
-            }
-        }
-
-        return flag;
+    public String GetStackKey(String str){
+        return keyRepository.get(str).getValue().peek();
     }
 
-    public boolean isOverlap(int num) {
-        boolean flag = false;
+    /*
+    //Stack 내부의 KEY가 STRING 인 경우
 
-        for(String key : keyRepository.store.keySet()){
-            if( (null != (keyRepository.get(key)).getValue() || "" != (keyRepository.get(key)).getValue())){
-                if( Integer.toString(num) == keyRepository.get(key).getValue()){
-                    flag = true;
-                    break;
-                }
-            }
-        }
-
-        return flag;
+    //Stack 내부의 KEY가 NUMBER 인 경우
+    public String GetStrStackKey(String str){
+        return (keyRepository.get(str)).strstacksetvalue.peek();
     }
+
+    public int GetIntStackKey(String str){
+        return (keyRepository.get(str)).intstacksetvalue.peek();
+    }
+    */
 }

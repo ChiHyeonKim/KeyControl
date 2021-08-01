@@ -1,15 +1,36 @@
 package com.kakaoins.keycontrol.domain;
 
+import java.util.HashSet;
+import java.util.Stack;
+
 public class Key {
     private String key;
     private String description;
     private String type;
     private String generator;
     private int min_length;
-    private String value;   //생성된 KEY 값 (키가 NUMBER 면 NUMBER->STRING 으로 변환하여 저장)
+
+    private Stack<String> value = new Stack<>(); //생성된 STRING KEY 값 저장
 
     private String resultCode;
     private String resultMessage;
+
+    public Key() {
+    }
+
+    public Key(String key, String description, String type) {
+        this.key = key;
+        this.description = description;
+        this.type = type;
+    }
+
+    public Key(String key, String description, String type, String generator, int min_length) {
+        this.key = key;
+        this.description = description;
+        this.type = type;
+        this.generator = generator;
+        this.min_length = min_length;
+    }
 
     public String getKey() {
         return key;
@@ -51,14 +72,6 @@ public class Key {
         this.min_length = min_length;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     public String getResultCode() {
         return resultCode;
     }
@@ -74,4 +87,14 @@ public class Key {
     public void setResultMessage(String resultMessage) {
         this.resultMessage = resultMessage;
     }
+
+    public Stack<String> getValue() {
+        return value;
+    }
+
+    public void setValue(String str) {
+        this.value.push(str);
+    }
+
+
 }
