@@ -4,7 +4,6 @@ package com.kakaoins.keycontrol.service;
  * STRING 형태의 KEY를 구현할 떄 사용
  */
 public class GenerateStringKey {
-
     String GenerateStringKey(){
         String theAlphaNumericS;
         StringBuilder builder;

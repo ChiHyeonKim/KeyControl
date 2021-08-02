@@ -2,6 +2,8 @@ package com.kakaoins.keycontrol.service;
 
 import com.kakaoins.keycontrol.constans.ErrCode;
 import com.kakaoins.keycontrol.domain.Key;
+import com.kakaoins.keycontrol.dto.GenerateKeyDTO;
+import com.kakaoins.keycontrol.dto.GetKeyDTO;
 import com.kakaoins.keycontrol.exception.APIException;
 import com.kakaoins.keycontrol.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,9 @@ public class KeyService {
      * KEY 정보를 등록하는 API
      *
      */
-    public void CreateKeyInfo(Key key) {
+    public void CreateKeyInfo(GenerateKeyDTO generateKeyDTO) {
         //이미 등록된 key 인지 확인 후 등록이 된 key는 등록 금지
-        if (true == keyRepository.isKey(key.getKey())){
+        if (true == keyRepository.isKey(generateKeyDTO.getKey())){
 
             //이미 등록된 key는 등록 불가
             throw new APIException("이미 등록된 KEY 입니다.", ErrCode.E0000.getCode());
@@ -27,15 +29,16 @@ public class KeyService {
 
         //등록이 안된 key만 등록 가능
         else {
-            Key newkey = new Key();
 
-            newkey.setKey(key.getKey());
-            newkey.setDescription(key.getDescription());
-            newkey.setType(key.getType());
-            newkey.setGenerator(key.getGenerator());
-            newkey.setMin_length(key.getMin_length());
+            //key에 데이터 저장을 위해
+            //DTO의 값을 Key로 복사
+            Key key = new Key( generateKeyDTO.getKey()
+                            , generateKeyDTO.getDescription()
+                            , generateKeyDTO.getType()
+                            , generateKeyDTO.getGenerator()
+                            , generateKeyDTO.getMin_length()  );
 
-            keyRepository.save(newkey);
+            keyRepository.save(key);
         }
     }
 
@@ -73,24 +76,24 @@ public class KeyService {
 
             //NUMBER KEY 생성
             else{
-                GenerateIntKey intkey = new GenerateIntKey();
-                int intnewvalue = 0;
+                GenerateNumberKey numberkey = new GenerateNumberKey();
+                String numbernewvalue;
 
                 //min length
                 int minlength = (keyRepository.get(str)).getMin_length();
 
-                intnewvalue = intkey.GenerateIntKey(minlength);
+                numbernewvalue = numberkey.GenerateNumberKey(minlength);
 
                 //새로 만든 KEY와 기존에 저장된 KEY가 중복이 안될떄까지 계속 검사 후 생성
 
-                while (keyRepository.isOverlap(str, Integer.toString(intnewvalue))) {
-                    intnewvalue = intkey.GenerateIntKey(minlength);
-                    keyRepository.isOverlap(str, Integer.toString(intnewvalue));
+                while (keyRepository.isOverlap(str, numbernewvalue)) {
+                    numbernewvalue = numberkey.GenerateNumberKey(minlength);
+                    keyRepository.isOverlap(str, numbernewvalue);
                 }
 
                 //객체의 Stacck에 new key를 세팅
                 //(keyRepository.get(str)).setValue(Long.toString(intnewvalue));
-                (keyRepository.get(str)).setValue(Integer.toString(intnewvalue));
+                (keyRepository.get(str)).setValue(numbernewvalue);
             }
             //}
         }
@@ -104,20 +107,10 @@ public class KeyService {
     /**
      * 새롭게 생성된 Stack 내부의 KEY를 RETURN 하는 함수
      */
-    public String GetStackKey(String str){
-        return keyRepository.get(str).getValue().peek();
-    }
+    public GetKeyDTO GetStackKey(String str){
+        GetKeyDTO getKeyDTO = new GetKeyDTO();
+        getKeyDTO.setValue( keyRepository.get(str).getValue().peek() );
 
-    /*
-    //Stack 내부의 KEY가 STRING 인 경우
-
-    //Stack 내부의 KEY가 NUMBER 인 경우
-    public String GetStrStackKey(String str){
-        return (keyRepository.get(str)).strstacksetvalue.peek();
+        return getKeyDTO;
     }
-
-    public int GetIntStackKey(String str){
-        return (keyRepository.get(str)).intstacksetvalue.peek();
-    }
-    */
 }
